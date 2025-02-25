@@ -347,6 +347,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
 
   /// a private method to embed the video to the editor
   Future _embedVideo({required String videoUrl}) async {
+    if(videoUrl.contains('youtu.be')){
+      videoUrl = videoUrl.replaceAll('youtu.be', 'youtube.com/embed');
+    }
     return await _webviewController.callJsMethod("embedVideo", [videoUrl]);
   }
 
