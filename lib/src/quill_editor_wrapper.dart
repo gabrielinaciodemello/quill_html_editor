@@ -10,6 +10,7 @@ import 'package:quill_html_editor/src/utils/hex_color.dart';
 import 'package:quill_html_editor/src/utils/string_util.dart';
 import 'package:quill_html_editor/src/widgets/edit_table_drop_down.dart';
 import 'package:quill_html_editor/src/widgets/webviewx/src/webviewx_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 ///[QuillHtmlEditor] widget to show the quill editor,
 //ignore: must_be_immutable
@@ -277,6 +278,9 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
               }
             }),
         DartCallback(name: 'EditorLoaded', callBack: (map) {}),
+        DartCallback(name: 'OnLinkClicked', callBack: (url) {
+          launchUrl(Uri.parse(url));
+        }),
       },
       webSpecificParams: const WebSpecificParams(
         printDebugInfo: false,
@@ -531,6 +535,22 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
       
         <!-- Initialize Quill editor -->
         <script>
+
+            // Intercept all link clicks
+            document.addEventListener('click', function(e) {
+              var target = e.target;
+              while (target && target.tagName !== 'A') {
+                target = target.parentNode;
+              }
+              if (target) {
+                if($kIsWeb) {
+                  OnLinkClicked(target.href);
+                } else {
+                  OnLinkClicked.postMessage(target.href);
+                }
+                e.preventDefault();
+              }
+            });
       
             let fullWindowHeight = window.innerHeight;
             let keyboardIsProbablyOpen = false;
