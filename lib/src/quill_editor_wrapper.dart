@@ -28,6 +28,7 @@ class QuillHtmlEditor extends StatefulWidget {
     this.onFocusChanged,
     this.onEditorCreated,
     this.onSelectionChanged,
+    this.onLinkClicked,
     this.padding = EdgeInsets.zero,
     this.hintTextPadding = EdgeInsets.zero,
     this.hintTextAlign = TextAlign.start,
@@ -84,6 +85,10 @@ class QuillHtmlEditor extends StatefulWidget {
   ///[onEditorCreated] a callback method triggered once the editor is created
   ///it will be called only once after editor is loaded completely
   final VoidCallback? onEditorCreated;
+
+  ///[onLinkClicked] callback function that triggers when a link is clicked
+  ///if provided, the default launchUrl behavior will be disabled
+  final Function(String)? onLinkClicked;
 
   ///[textStyle] optional style for the default editor text,
   ///while all fields in the style are not mapped;Some basic fields like,
@@ -279,6 +284,10 @@ class QuillHtmlEditorState extends State<QuillHtmlEditor> {
             }),
         DartCallback(name: 'EditorLoaded', callBack: (map) {}),
         DartCallback(name: 'OnLinkClicked', callBack: (url) {
+          if (widget.onLinkClicked != null) {
+            widget.onLinkClicked!(url);
+            return;
+          }
           launchUrl(Uri.parse(url));
         }),
       },
